@@ -2,25 +2,24 @@
  *
  * @description 腾讯视频好莱坞会员V力值签到，手机签到和领取任务及奖励。
  * @author BlueSkyClouds
- * @create_at 2022-11-09
+ * @create_at 2022-11-24
  */
 
 const $ = new Env('腾讯视频会员签到');
 const notify = $.isNode() ? require('../sendNotify') : '';
 let ref_url = ''
-const _cookie = process.env.V_COOKIE
+let _cookie = process.env.V_COOKIE
 const SEND_KEY = process.env.SEND_KEY
 const auth = getAuth()
 const axios = require('axios')
 const UTC8 = new Date().getTime() + new Date().getTimezoneOffset()*60*1000 + 8*60*60*1000;
-notice = timeFormat(UTC8) + "\n"
+let notice = timeFormat(UTC8) + "\n"
 
-const headers = {
+let headers = {
     'Referer': 'https://v.qq.com',
     'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.204 Safari/537.36',
     'Cookie': _cookie
 }
-
 /**
  * @description 拼接REF_URL
  */
@@ -103,7 +102,7 @@ function refCookie(url = ref_url) {
             // 刷新cookie后去签到
             resovle({
                 ...headers, Cookie: Object.keys(auth).map(i => i + '=' + auth[i]).join('; '),
-                'Referer': 'https://m.v.qq.com'
+                'Referer': 'https://film.video.qq.com/'
             })
         }).catch(reject)
     })
@@ -200,13 +199,20 @@ function txVideoDownTask1(headers) {
             $.log(error);
             console.log("腾讯视频会员签到", "下载任务签到请求 ‼️‼️", error)
         } else {
-            msg = data.match(/score":(.*?)}/)[1]
-            if (msg !== 0) {
-                console.log("腾讯视频会员下载任务签到：签到失败, 任务未完成 ‼️")
-                notice += "腾讯视频会员下载任务签到：签到失败, 任务未完成 ‼️\n"
-            } else{
-                console.log("腾讯视频会员下载任务签到：签到成功，签到分数：" + msg + "分 🎉")
-                notice += "腾讯视频会员下载任务签到：签到成功，签到分数：" + msg + "分 🎉" + "\n"
+            console.log(data)
+            if (data.match(/score/)) {
+                let msg;
+                msg = data.match(/score":(.*?)}/)[1]
+                if (msg !== 0) {
+                    console.log("腾讯视频会员下载任务签到：签到失败, 任务未完成 ‼️")
+                    notice += "腾讯视频会员下载任务签到：签到失败, 任务未完成 ‼️\n"
+                } else{
+                    console.log("腾讯视频会员下载任务签到：签到成功，签到分数：" + msg + "分 🎉")
+                    notice += "腾讯视频会员下载任务签到：签到成功，签到分数：" + msg + "分 🎉" + "\n"
+                }
+            } else {
+                console.log("腾讯视频会员下载任务签到失败：未知错误请查看控制台输出 ‼️‼️\n" + data)
+                notice += "腾讯视频会员下载任务签到失败：未知错误请查看控制台输出 ‼️‼️" + "\n" + data
             }
         }
     })
@@ -221,13 +227,19 @@ function txVideoDownTask2(headers) {
             $.log(error);
             console.log("腾讯视频会员签到", "赠送任务签到请求 ‼️‼️", error)
         } else {
-            msg = data.match(/score":(.*?)}/)[1]
-            if (msg !== 0) {
-                console.log("腾讯视频会员赠送任务签到：签到失败, 任务未完成 ‼️")
-                notice += "腾讯视频会员赠送任务签到：签到失败, 任务未完成 ‼️\n"
-            } else{
-                console.log("腾讯视频会员赠送任务签到：签到成功，签到分数：" + msg + "分 🎉")
-                notice += "腾讯视频会员赠送任务签到：签到成功，签到分数：" + msg + "分 🎉" + "\n"
+            if (data.match(/score/)) {
+                let msg;
+                msg = data.match(/score":(.*?)}/)[1]
+                if (msg !== 0) {
+                    console.log("腾讯视频会员赠送任务签到：签到失败, 任务未完成 ‼️")
+                    notice += "腾讯视频会员赠送任务签到：签到失败, 任务未完成 ‼️\n"
+                } else{
+                    console.log("腾讯视频会员赠送任务签到：签到成功，签到分数：" + msg + "分 🎉")
+                    notice += "腾讯视频会员赠送任务签到：签到成功，签到分数：" + msg + "分 🎉" + "\n"
+                }
+            } else {
+                console.log("腾讯视频会员赠送任务签到失败：未知错误请查看控制台输出 ‼️‼️\n" + data)
+                notice += "腾讯视频会员赠送任务签到失败：未知错误请查看控制台输出 ‼️‼️" + "\n" + data
             }
         }
     })
@@ -242,13 +254,19 @@ function txVideoDownTask3(headers) {
             $.log(error);
             console.log("腾讯视频会员签到", "弹幕任务签到请求 ‼️‼️", error)
         } else {
-            msg = data.match(/score":(.*?)}/)[1]
-            if (msg !== 0) {
-                console.log("腾讯视频会员弹幕任务签到：签到失败, 任务未完成 ‼️")
-                notice += "腾讯视频会员弹幕任务签到：签到失败, 任务未完成 ‼️\n"
+            if (data.match(/score/)) {
+                let msg;
+                msg = data.match(/score":(.*?)}/)[1]
+                if (msg !== 0) {
+                    console.log("腾讯视频会员弹幕任务签到：签到失败, 任务未完成 ‼️")
+                    notice += "腾讯视频会员弹幕任务签到：签到失败, 任务未完成 ‼️\n"
+                } else {
+                    console.log("腾讯视频会员弹幕任务签到：签到成功，签到分数：" + msg + "分 🎉")
+                    notice += "腾讯视频会员弹幕任务签到：签到成功，签到分数：" + msg + "分 🎉" + "\n"
+                }
             } else {
-                console.log("腾讯视频会员弹幕任务签到：签到成功，签到分数：" + msg + "分 🎉")
-                notice += "腾讯视频会员弹幕任务签到：签到成功，签到分数：" + msg + "分 🎉" + "\n"
+                console.log("腾讯视频会员弹幕任务签到失败：未知错误请查看控制台输出 ‼️‼️\n" + data)
+                notice += "腾讯视频会员弹幕任务签到失败：未知错误请查看控制台输出 ‼️‼️" + "\n" + data
             }
         }
     })
@@ -257,19 +275,25 @@ function txVideoDownTask3(headers) {
 //观看60分钟任务签到请求
 function txVideoDownTask4(headers) {
     $.get({
-        url: `https://vip.video.qq.com/fcgi-bin/comm_cgi?name=spp_MissionFaHuo&cmd=4&task_id=1&_=${ parseInt(Math.random()*1000) }`, headers
+        url: `https://vip.video.qq.com/fcgi-bin/comm_cgi?name=spp_MissionFaHuo&cmd=4&task_id=7&_=${ parseInt(Math.random()*1000) }`, headers
     }, function(error, response, data) {
         if (error) {
             $.log(error);
             console.log("腾讯视频会员签到", "观看任务签到请求 ‼️‼️", error)
         } else {
-            msg = data.match(/score":(.*?)}/)[1]
-            if (msg !== 0) {
-                console.log("腾讯视频会员观看任务签到：签到失败, 任务未完成 ‼️")
-                notice += "腾讯视频会员观看任务签到：签到失败, 任务未完成 ‼️\n"
+            if (data.match(/score/)) {
+                let msg;
+                msg = data.match(/score":(.*?)}/)[1]
+                if (msg !== 0) {
+                    console.log("腾讯视频会员观看任务签到：签到失败, 任务未完成 ‼️")
+                    notice += "腾讯视频会员观看任务签到：签到失败, 任务未完成 ‼️\n"
+                } else {
+                    console.log("腾讯视频会员观看任务签到：签到成功，签到分数：" + msg + "分 🎉")
+                    notice += "腾讯视频会员观看任务签到：签到成功，签到分数：" + msg + "分 🎉" + "\n"
+                }
             } else {
-                console.log("腾讯视频会员观看任务签到：签到成功，签到分数：" + msg + "分 🎉")
-                notice += "腾讯视频会员观看任务签到：签到成功，签到分数：" + msg + "分 🎉" + "\n"
+                console.log("腾讯视频会员观看任务签到失败：未知错误请查看控制台输出 ‼️‼️\n" + data)
+                notice += "腾讯视频会员观看任务签到失败：未知错误请查看控制台输出 ‼️‼️" + "\n" + data
             }
         }
     })
@@ -295,11 +319,11 @@ exports.main = () => new Promise(
         .then(params=>Promise.all([
             txVideoSignIn(params),
             //txVideoCheckin(params),
-            //setTimeout(() => {txVideoDownTask1(params)},1000),
-            //setTimeout(() => {txVideoDownTask2(params)},2000),
-            //setTimeout(() => {txVideoDownTask3(params)},3000),
-            //setTimeout(() => {txVideoDownTask4(params)},4000),
-            setTimeout(() => {sendNotify()},10000)
+            setTimeout(() => {txVideoDownTask1(params)},5000),
+            setTimeout(() => {txVideoDownTask2(params)},10000),
+            setTimeout(() => {txVideoDownTask3(params)},15000),
+            setTimeout(() => {txVideoDownTask4(params)},20000),
+            setTimeout(() => {sendNotify()},25000)
             ])
             .then(e=>resovle())
             .catch(e=>reject())
